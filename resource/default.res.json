@@ -1,0 +1,50 @@
+{
+	"groups": [
+		{
+			"keys": "bg_jpg,egret_icon_png,description_json,todo_png,npc-2_png,npc-1_png,done_png,doing_png",
+			"name": "preload"
+		}
+	],
+	"resources": [
+		{
+			"url": "assets/bg.jpg",
+			"type": "image",
+			"name": "bg_jpg"
+		},
+		{
+			"url": "assets/egret_icon.png",
+			"type": "image",
+			"name": "egret_icon_png"
+		},
+		{
+			"url": "config/description.json",
+			"type": "json",
+			"name": "description_json"
+		},
+		{
+			"url": "assets/doing.png",
+			"type": "image",
+			"name": "doing_png"
+		},
+		{
+			"url": "assets/done.png",
+			"type": "image",
+			"name": "done_png"
+		},
+		{
+			"url": "assets/npc-1.png",
+			"type": "image",
+			"name": "npc-1_png"
+		},
+		{
+			"url": "assets/npc-2.png",
+			"type": "image",
+			"name": "npc-2_png"
+		},
+		{
+			"url": "assets/todo.png",
+			"type": "image",
+			"name": "todo_png"
+		}
+	]
+}
