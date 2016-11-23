@@ -1,4 +1,9 @@
-class TaskService {
+interface EventEmitter {
+    addObserver(observer: Observer);
+    notify(task: Task);
+}
+
+class TaskService implements EventEmitter {
 
     private static instance;
     private static count = 0;
@@ -22,6 +27,7 @@ class TaskService {
     }
 
     public getTaskByCustomRule(): Task {
+          
         for (var id in this.taskList) {
             var task = this.taskList[id];
             if (task.status == TaskStatus.CAN_SUBMIT)
@@ -36,23 +42,40 @@ class TaskService {
 
     }
 
+     public getNextTask(): Task {
+          
+        for (var id in this.taskList) {
+            var task = this.taskList[id];
+            if (task.status == TaskStatus.UNACCEPTABLE)
+                return task;
+        }
+
+    }
+
+
 
     accept(id: string) {
+
         if (!id) {
             return ErrorCode.MISSING_TASK;
         }
         let task = this.taskList[id];
         if (task.id == id) {
-            task.status = TaskStatus.CAN_SUBMIT;
+
+            task.status = TaskStatus.DURING;
+            task.onAccept();
+            console.log("onacc后"+task.status);
             this.notify(this.taskList[id]);
-            console.log("111");
+           
             return ErrorCode.SUCCESS;
         }
         else {
+
             return ErrorCode.MISSING_TASK;
         }
 
     }
+
 
     finish(id: string) {
         if (!id) {
@@ -60,9 +83,10 @@ class TaskService {
         }
         let task = this.taskList[id];
         if (task.id == id) {
+            console.log("finish");
             task.status = TaskStatus.SUBMITED;
             this.notify(this.taskList[id]);
-          
+
             return ErrorCode.SUCCESS;
         }
         else {
@@ -70,8 +94,8 @@ class TaskService {
         }
     }
 
-    private notify(task: Task) {
-       // console.log("111");
+   public  notify(task: Task) {
+        // console.log("111");
         for (var observer of this.observerList) {
             observer.onChange(task);
         }
@@ -88,11 +112,19 @@ class TaskService {
         }
         this.observerList.push(observer);
     }
+   
 }
 
 enum ErrorCode {
+
     SUCCESS,
     MISSING_TASK,
     REPEAT_OBSERVER
 
 }
+
+
+
+
+
+

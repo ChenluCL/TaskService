@@ -1,18 +1,39 @@
-class Task {
+class Task implements TaskConditionContext {
 
     private _id: string;
     private _name: string;
     private _status: TaskStatus;
+    private _current: number = 0;
+    private _condition: TaskConditon;
 
     public fromNpcId: string;
     public toNpcId: string;
     public desc: string;
+    public total: number;
+    public NPCTaskTalk:string;
+    
+    constructor(id: string, name: string, condition: TaskConditon) {
 
-    constructor(id: string, name: string) {
         this._id = id;
         this._name = name;
+        this._condition = condition;
+    }
+
+    public checkStatus() {
+
+        if (this._status == TaskStatus.DURING &&
+            this._current >= this.total) {
+            this._status = TaskStatus.CAN_SUBMIT;
+        }
+
+        TaskService.getInstance().notify(this);
 
     }
+    public get condition(): TaskConditon {
+        return this._condition;
+    }
+
+
     public get status(): TaskStatus {
 
         return this._status;
@@ -24,6 +45,10 @@ class Task {
 
     public get name(): string {
         return this._name;
+    }
+
+    public getcurrent(): number {
+        return this._current;
     }
 
     public set status(value: TaskStatus) {
@@ -38,6 +63,17 @@ class Task {
         this._id = id;
     }
 
+    public setcurrent(current: number) {
+        this._current = current;
+        this.checkStatus();
+    }
+
+    public onAccept() {
+        this._condition.onAccept(this);
+    }
+
+   
+
 }
 
 enum TaskStatus {
@@ -50,3 +86,67 @@ enum TaskStatus {
 
 }
 
+interface TaskConditon {
+
+    onAccept(task: TaskConditionContext);
+
+    onSubmit(task: TaskConditionContext);
+
+    onChange(task: TaskConditionContext);
+
+}
+
+interface TaskConditionContext {
+    getcurrent(): number;
+    setcurrent(current: number);
+  
+}
+
+
+
+
+
+class KillMonsterTaskCondition implements TaskConditon, Observer {
+
+    onAccept(task: TaskConditionContext) {
+
+       
+         task.setcurrent(task.getcurrent());
+    }
+
+    onSubmit(task: TaskConditionContext) {
+
+
+    }
+
+    onChange(task: TaskConditionContext) {
+
+       var temp = task.getcurrent();
+       temp++;
+        task.setcurrent(temp);
+
+    }
+
+}
+
+class NPCTalkTaskCondition implements TaskConditon {
+    onAccept(task: TaskConditionContext) {
+        //task.current++;
+        // var temp = 0;
+        // temp = task.getcurrent();
+        task.setcurrent(1);
+
+       
+
+
+    }
+
+    onSubmit(task: TaskConditionContext) {
+
+  
+    }
+
+      onChange(task: TaskConditionContext) {
+
+      }
+}

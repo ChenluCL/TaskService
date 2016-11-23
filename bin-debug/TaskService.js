@@ -26,15 +26,23 @@ var TaskService = (function () {
                 return task;
         }
     };
+    p.getNextTask = function () {
+        for (var id in this.taskList) {
+            var task = this.taskList[id];
+            if (task.status == TaskStatus.UNACCEPTABLE)
+                return task;
+        }
+    };
     p.accept = function (id) {
         if (!id) {
             return ErrorCode.MISSING_TASK;
         }
         var task = this.taskList[id];
         if (task.id == id) {
-            task.status = TaskStatus.CAN_SUBMIT;
+            task.status = TaskStatus.DURING;
+            task.onAccept();
+            console.log("onacc后" + task.status);
             this.notify(this.taskList[id]);
-            console.log("111");
             return ErrorCode.SUCCESS;
         }
         else {
@@ -47,6 +55,7 @@ var TaskService = (function () {
         }
         var task = this.taskList[id];
         if (task.id == id) {
+            console.log("finish");
             task.status = TaskStatus.SUBMITED;
             this.notify(this.taskList[id]);
             return ErrorCode.SUCCESS;
@@ -75,7 +84,7 @@ var TaskService = (function () {
     TaskService.count = 0;
     return TaskService;
 }());
-egret.registerClass(TaskService,'TaskService');
+egret.registerClass(TaskService,'TaskService',["EventEmitter"]);
 var ErrorCode;
 (function (ErrorCode) {
     ErrorCode[ErrorCode["SUCCESS"] = 0] = "SUCCESS";
